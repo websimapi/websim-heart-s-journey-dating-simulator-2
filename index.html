@@ -1,0 +1,118 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heart's Journey: Dating Simulator</title>
+    <link rel="stylesheet" href="styles.css">
+    <script type="importmap">
+    {
+      "imports": {
+        "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js"
+      }
+    }
+    </script>
+</head>
+<body>
+    <div id="app">
+        <!-- Loading Screen -->
+        <div v-if="currentScreen === 'loading'" class="screen loading-screen">
+            <h1>Heart's Journey</h1>
+            <div class="loading-container">
+                <div class="loading-bar">
+                    <div class="loading-progress" :style="{ width: loadingProgress + '%' }"></div>
+                </div>
+                <p>{{ loadingMessage }}</p>
+            </div>
+        </div>
+
+        <!-- Main Menu -->
+        <div v-else-if="currentScreen === 'mainMenu'" class="screen main-menu">
+            <div class="menu-container">
+                <h1>Heart's Journey</h1>
+                <div class="menu-buttons">
+                    <button @click="startNewGame">New Game</button>
+                    <button @click="continueGame" :disabled="!hasSavedGame">Continue</button>
+                    <button @click="showSettings">Settings</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Character Selection -->
+        <div v-else-if="currentScreen === 'characterSelection'" class="screen character-selection">
+            <h2>Choose Your Date</h2>
+            <div class="character-cards">
+                <div v-for="character in characters" :key="character.id" class="character-card" @click="selectCharacter(character)">
+                    <div class="character-image-container">
+                        <img :src="character.imageUrl || 'assets/placeholder-character.svg'" :alt="character.name" class="character-image">
+                    </div>
+                    <div class="character-info">
+                        <h3>{{ character.name }}</h3>
+                        <p>{{ character.shortDescription }}</p>
+                    </div>
+                </div>
+            </div>
+            <button class="back-button" @click="goToMainMenu">Back</button>
+        </div>
+
+        <!-- Location Selection -->
+        <div v-else-if="currentScreen === 'locationSelection'" class="screen location-selection">
+            <h2>Choose Your Date Location</h2>
+            <div class="location-cards">
+                <div v-for="location in locations" :key="location.id" class="location-card" @click="selectLocation(location)">
+                    <div class="location-image-container">
+                        <img :src="location.imageUrl || 'assets/placeholder-location.svg'" :alt="location.name" class="location-image">
+                    </div>
+                    <div class="location-info">
+                        <h3>{{ location.name }}</h3>
+                    </div>
+                </div>
+            </div>
+            <button class="back-button" @click="goToCharacterSelection">Back</button>
+        </div>
+
+        <!-- Game Screen -->
+        <div v-else-if="currentScreen === 'gameScreen'" class="screen game-screen">
+            <div class="game-background" :style="{ backgroundImage: `url(${currentLocation.imageUrl})` }">
+                <div class="character-portrait">
+                    <img :src="currentCharacter.imageUrl" :alt="currentCharacter.name">
+                </div>
+                <div class="dialogue-box">
+                    <div class="character-name">{{ currentCharacter.name }}</div>
+                    <div class="dialogue-text">{{ currentDialogue }}</div>
+                    <div class="choices" v-if="showChoices">
+                        <button v-for="(choice, index) in currentChoices" :key="index" @click="makeChoice(index)" class="choice-button">
+                            {{ choice.text }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="game-controls">
+                <button @click="showSettings">Settings</button>
+            </div>
+        </div>
+
+        <!-- Settings Screen -->
+        <div v-else-if="currentScreen === 'settings'" class="screen settings-screen">
+            <h2>Settings</h2>
+            <div class="settings-container">
+                <div class="setting-item">
+                    <label for="tts-toggle">Text-to-Speech</label>
+                    <label class="switch">
+                        <input type="checkbox" id="tts-toggle" v-model="settings.textToSpeech">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <label for="text-speed">Text Speed</label>
+                    <input type="range" id="text-speed" min="1" max="10" v-model.number="settings.textSpeed">
+                </div>
+                <button @click="saveSettings">Save Settings</button>
+                <button @click="goBack">Back</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="app.js"></script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"4c6229722a6346bc8eb5cb0e5eae5d41","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>
